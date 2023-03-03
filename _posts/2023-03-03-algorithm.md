@@ -4,7 +4,7 @@ date: 2023-03-03
 categories: [Algorithm]
 tags : [AIFFEL, Algorithm, Python]
 toc: True
-# comments: false
+comments: True
 # math: True
 # mermaid: True 
 
