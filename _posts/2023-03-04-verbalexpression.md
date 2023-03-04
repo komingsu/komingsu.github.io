@@ -21,22 +21,18 @@ comments: True
       text-align: center;
       border: 0px !important;
     }
-
     table.dataframe th {
       text-align: center;
       font-weight: bold;
       padding: 8px;
     }
-
     table.dataframe td {
       text-align: center;
       padding: 8px;
     }
-
     table.dataframe tr:hover {
       background: #b8d1f3; 
     }
-
     .output_prompt {
       overflow: auto;
       font-size: 0.9rem;
@@ -53,28 +49,22 @@ comments: True
       word-break: normal;
       white-space: pre;
     }
-
   .dataframe tbody tr th:only-of-type {
       vertical-align: middle;
   }
-
   .dataframe tbody tr th {
       vertical-align: top;
   }
-
   .dataframe thead th {
       text-align: center !important;
       padding: 8px;
   }
-
   .page__content p {
       margin: 0 0 0px !important;
   }
-
   .page__content p > strong {
     font-size: 0.8rem !important;
   }
-
   </style>
 </head>
 
@@ -161,11 +151,11 @@ Replace duck with a duck
 
 ​	
 
-## 사용법
+# 사용법
 
 ​	전화번호의 형태 010-0000-0000 인지 확인하는 사용예제를 만들면서 사용법을 확인해보겠습니다.
 
-### 1. VerbalExpression 객체 생성
+## 1. VerbalExpression 객체 생성
 
 ```python
 from verbalexpressions import VerEx
@@ -179,7 +169,7 @@ re1 = ve
 
 
 
-### 2. start_of_line(), end_of_line()
+## 2. start_of_line(), end_of_line()
 
 ​	식의 처음과 끝에는 항상 들어가야합니다
 
@@ -194,7 +184,7 @@ re1 = (ve.
 
 ​	정규표현식의 "^"  , "$" 와 같습니다.
 
-### 3. fine(value), then(value)
+## 3. fine(value), then(value)
 
 ​	반드시 들어가야하는 표현을 적습니다.
 
@@ -210,7 +200,7 @@ re1 = (ve.
 
 ​	정규표현식의 "(%s)?" 와 같습니다. 
 
-### 4. maybe(value)
+## 4. maybe(value)
 
 ​	들어갈 수도 있는 표현을 적습니다.
 
@@ -227,7 +217,7 @@ re1 = (ve.
 
 ​	정규표현식의 "(%s)?%value" 와 같습니다
 
-### 5. range(value, value)
+## 5. range(value, value)
 
 ​	연속된 범위를 찾는 표현을 적습니다.
 
@@ -255,7 +245,7 @@ re2 = (ve.
 
 ​	
 
-### 6. source(), raw(), value()
+## 6. source(), raw(), value()
 
 ​	모두 같은 기능을 합니다. 정규표현식을 문자열로 return 합니다.
 
@@ -284,7 +274,7 @@ valid
 
 
 
-### 7. regex(), compile()
+## 7. regex(), compile()
 
  정규표현식의 compile() 과 같습니다.
 
@@ -300,7 +290,7 @@ re.compile(r'^(010)(\-)?([0-9])([0-9])([0-9])([0-9])(\-)?([0-9])([0-9])([0-9])([
 
 
 
-### 8. anything()
+## 8. anything()
 
 ​	와일드카드(*) 문자입니다. 어떤것이 와도 가능합니다.
 
@@ -315,7 +305,7 @@ re3 = (ve.
 
 ​	정규표현식의 "(.*)" 과 같습니다.
 
-### 9. anything_but(value)
+## 9. anything_but(value)
 
 ​	특정 표현외에 모든것이 와도 가능한 표현에 사용합니다.
 
@@ -333,7 +323,7 @@ re3 = (ve.
 
 
 
-### 10. line_break()
+## 10. line_break()
 
 ​	줄 바꿈을 표현합니다.
 
@@ -341,7 +331,7 @@ re3 = (ve.
 
 
 
-### 11. tab()
+## 11. tab()
 
 ​	`\t`, `tab` 이 쓰였는지 표현합니다.
 
@@ -349,7 +339,7 @@ re3 = (ve.
 
 
 
-### 12. word()
+## 12. word()
 
 ​	단어가 있는지 표현합니다.
 
@@ -357,7 +347,7 @@ re3 = (ve.
 
 
 
-### 13. OR()
+## 13. OR()
 
 ​	기존의 정규표현식에서 OR을 대체합니다.
 
@@ -365,7 +355,7 @@ re3 = (ve.
 
 
 
-### 끝으로
+## 끝으로
 
 
 
