@@ -8,123 +8,74 @@ comments: True
 ---
 
 <head>
-
   <style>
+    table.dataframe {
+      white-space: normal;
+      width: 100%;
+      height: 240px;
+      display: block;
+      overflow: auto;
+      font-family: Arial, sans-serif;
+      font-size: 0.9rem;
+      line-height: 20px;
+      text-align: center;
+      border: 0px !important;
+    }
 
-  table.dataframe {
+    table.dataframe th {
+      text-align: center;
+      font-weight: bold;
+      padding: 8px;
+    }
 
-   white-space: normal;
+    table.dataframe td {
+      text-align: center;
+      padding: 8px;
+    }
 
-   width: 100%;
+    table.dataframe tr:hover {
+      background: #b8d1f3; 
+    }
 
-   height: 240px;
+    .output_prompt {
+      overflow: auto;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      border-radius: 0.3rem;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.8rem;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      color: $code-text-color;
+      border: solid 1px $border-color;
+      border-radius: 0.3rem;
+      word-break: normal;
+      white-space: pre;
+    }
 
-   display: block;
-
-   overflow: auto;
-
-   font-family: Arial, sans-serif;
-
-   font-size: 0.9rem;
-
-   line-height: 20px;
-
-   text-align: center;
-
-   border: 0px !important;
-
+  .dataframe tbody tr th:only-of-type {
+      vertical-align: middle;
   }
 
-  table.dataframe th {
-
-   text-align: center;
-
-   font-weight: bold;
-
-   padding: 8px;
-
+  .dataframe tbody tr th {
+      vertical-align: top;
   }
 
-  table.dataframe td {
-
-   text-align: center;
-
-   padding: 8px;
-
+  .dataframe thead th {
+      text-align: center !important;
+      padding: 8px;
   }
 
-  table.dataframe tr:hover {
-
-   background: #b8d1f3; 
-
+  .page__content p {
+      margin: 0 0 0px !important;
   }
 
-  .output_prompt {
-
-   overflow: auto;
-
-   font-size: 0.9rem;
-
-   line-height: 1.45;
-
-   border-radius: 0.3rem;
-
-   -webkit-overflow-scrolling: touch;
-
-   padding: 0.8rem;
-
-   margin-top: 0;
-
-   margin-bottom: 15px;
-
-   font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace;
-
-   color: $code-text-color;
-
-   border: solid 1px $border-color;
-
-   border-radius: 0.3rem;
-
-   word-break: normal;
-
-   white-space: pre;
-
+  .page__content p > strong {
+    font-size: 0.8rem !important;
   }
 
- .dataframe tbody tr th:only-of-type {
-
-   vertical-align: middle;
-
- }
-
- .dataframe tbody tr th {
-
-   vertical-align: top;
-
- }
-
- .dataframe thead th {
-
-   text-align: center !important;
-
-   padding: 8px;
-
- }
-
- .page__content p {
-
-   margin: 0 0 0px !important;
-
- }
-
- .page__content p > strong {
-
-  font-size: 0.8rem !important;
-
- }
-
- </style>
-
+  </style>
 </head>
 
 ​	정규표현식, Regular Expression 간단히는 정규식, Regex 라고 하는 것은특정한 규칙을 가진 문자열의 집합을 표현하는 데 사용하는 형식 언어입니다.
@@ -143,16 +94,16 @@ comments: True
 
 
 
-## 라이브러리 다운로드
+# 라이브러리 다운로드
 
 ```Python
 !pip install VerbalExpressions
 ```
 
 
-## 사용예시
+# 사용예시
 
-​	URL을 읽어오는 정규표현식을 만들어보겠습니다.
+  URL을 읽어오는 정규표현식을 만들어보겠습니다.
 
 ```python
 from verbalexpressions import VerEx
@@ -182,7 +133,7 @@ if tester.match(test_url):
 Valid URL
 </pre>
 
-​	어떤 정규표현식이 만들어진 것인지 확인해보기.
+​	어떤 정규표현식이 만들어진 것인지 확인해봅니다.
 
 ```python
 print(tester.source())
