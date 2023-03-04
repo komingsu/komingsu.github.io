@@ -5,15 +5,127 @@ categories: [Python]
 tags : [Python]
 toc: True
 comments: True
-# math: True
-# mermaid: True 
-
-# pin:True # 포스트를 상단에 pin
-# how to upload image : ![Desktop View](/assets/img/sample/mockup.png){: width="700" height="400" }{: .left }
-
 ---
 
+<head>
 
+  <style>
+
+  table.dataframe {
+
+   white-space: normal;
+
+   width: 100%;
+
+   height: 240px;
+
+   display: block;
+
+   overflow: auto;
+
+   font-family: Arial, sans-serif;
+
+   font-size: 0.9rem;
+
+   line-height: 20px;
+
+   text-align: center;
+
+   border: 0px !important;
+
+  }
+
+  table.dataframe th {
+
+   text-align: center;
+
+   font-weight: bold;
+
+   padding: 8px;
+
+  }
+
+  table.dataframe td {
+
+   text-align: center;
+
+   padding: 8px;
+
+  }
+
+  table.dataframe tr:hover {
+
+   background: #b8d1f3; 
+
+  }
+
+  .output_prompt {
+
+   overflow: auto;
+
+   font-size: 0.9rem;
+
+   line-height: 1.45;
+
+   border-radius: 0.3rem;
+
+   -webkit-overflow-scrolling: touch;
+
+   padding: 0.8rem;
+
+   margin-top: 0;
+
+   margin-bottom: 15px;
+
+   font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+   color: $code-text-color;
+
+   border: solid 1px $border-color;
+
+   border-radius: 0.3rem;
+
+   word-break: normal;
+
+   white-space: pre;
+
+  }
+
+ .dataframe tbody tr th:only-of-type {
+
+   vertical-align: middle;
+
+ }
+
+ .dataframe tbody tr th {
+
+   vertical-align: top;
+
+ }
+
+ .dataframe thead th {
+
+   text-align: center !important;
+
+   padding: 8px;
+
+ }
+
+ .page__content p {
+
+   margin: 0 0 0px !important;
+
+ }
+
+ .page__content p > strong {
+
+  font-size: 0.8rem !important;
+
+ }
+
+ </style>
+
+</head>
 
 ​	정규표현식, Regular Expression 간단히는 정규식, Regex 라고 하는 것은특정한 규칙을 가진 문자열의 집합을 표현하는 데 사용하는 형식 언어입니다.
 
@@ -27,7 +139,7 @@ comments: True
 
 
 
-그래서 찾게된 함수형 정규표현식 **`VerbalExpressions` **
+그래서 찾게된 함수형 정규표현식 `VerbalExpressions`
 
 
 
@@ -36,7 +148,6 @@ comments: True
 ```Python
 !pip install VerbalExpressions
 ```
-
 
 
 ## 사용예시
@@ -60,7 +171,7 @@ tester = (ve.
 
 ​	테스트 URL도 만들구요
 
-```Py
+```python
 test_url = "https://www.google.com"
 
 if tester.match(test_url):
@@ -68,7 +179,7 @@ if tester.match(test_url):
 ```
 
 <pre>
-    Valid URL
+Valid URL
 </pre>
 
 ​	어떤 정규표현식이 만들어진 것인지 확인해보기.
@@ -78,7 +189,7 @@ print(tester.source())
 ```
 
 <pre>
-    ^(http)(s)?(://)(www\.)?([^\ ]*)$
+^(http)(s)?(://)(www\.)?([^\ ]*)$
 </pre>
 
 
@@ -94,7 +205,7 @@ print(result_ve)
 ```
 
 <pre>
-    Replace duck with a duck
+Replace duck with a duck
 </pre>
 
 ​	
@@ -202,7 +313,7 @@ print(re1.source())
 ```
 
 <pre>
-   ^(010)(\-)?([0-9])([0-9])([0-9])([0-9])(\-)?([0-9])([0-9])([0-9])([0-9])$ 
+^(010)(\-)?([0-9])([0-9])([0-9])([0-9])(\-)?([0-9])([0-9])([0-9])([0-9])$ 
 </pre>
 
 
@@ -215,7 +326,7 @@ if re1.match(test_number):
 ```
 
 <pre>
-    valid
+valid
 </pre>
 
 잘 나오는 것을 볼 수 있습니다.
@@ -231,7 +342,7 @@ re1.compile()
 ```
 
 <pre>
-    re.compile(r'^(010)(\-)?([0-9])([0-9])([0-9])([0-9])(\-)?([0-9])([0-9])([0-9])([0-9])$', re.UNICODE)
+re.compile(r'^(010)(\-)?([0-9])([0-9])([0-9])([0-9])(\-)?([0-9])([0-9])([0-9])([0-9])$', re.UNICODE)
 </pre>
 
 정규표현식의 객체로 받을 수 있습니다.
