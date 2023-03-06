@@ -81,13 +81,13 @@ theme_mode:   # [light|dark]
 img_cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: '/images/p1.png'
+avatar: /images/p1.png
 
 # boolean type, the global switch for ToC in posts.
 toc: true
 
 comments:
-  active: 'disqus'        # The global switch for posts comments, e.g., 'disqus'.  Keep it empty means disable
+  active: disqus        # The global switch for posts comments, e.g., 'disqus'.  Keep it empty means disable
   # The active options are as follows:
   disqus:
     shortname: Ming's note
