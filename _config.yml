@@ -90,7 +90,7 @@ comments:
   active: 'disqus'        # The global switch for posts comments, e.g., 'disqus'.  Keep it empty means disable
   # The active options are as follows:
   disqus:
-    shortname: 'Ming's note'
+    shortname: Ming's note
   # utterances settings › https://utteranc.es/
   utterances:
     repo:         # <gh-username>/<repo>
