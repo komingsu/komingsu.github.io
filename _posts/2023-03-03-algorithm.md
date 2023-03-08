@@ -1,7 +1,7 @@
 ---
 title: 비트마스킹, 비트연산자
 date: 2023-03-03
-categories: [Algorithm]
+categories: [Algorithm, Fundamental]
 tags : [AIFFEL, Algorithm, Python]
 toc: True
 comments: True
