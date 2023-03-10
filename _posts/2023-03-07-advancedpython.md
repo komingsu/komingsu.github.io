@@ -2,7 +2,7 @@
 title: 내가 보려고 만든, 중급 python 기능
 date: 2023-03-07
 categories: [Python]
-tags : [Python]
+tags : [Python, Made_for_me]
 toc: True
 ---
 
