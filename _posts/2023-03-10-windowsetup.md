@@ -1,5 +1,5 @@
 ---
-title: 내가 보려고 만든, Window에서 개발환경 setup 하기 (cuda, cudnn 까지)
+title: 내가 보려고 만든, Window에서 tensorflow 개발환경 구축하기 (cuda, cudnn 까지)
 date: 2023-03-10
 categories: [Setup, Window]
 tags : [Made_for_me, Window, setup]
@@ -10,9 +10,7 @@ toc: True
 
 내용은  [노마드코더](https://nomadcoders.co/) 의 window 셋업 강의를 보고 정리하였습니다.
 
-이후 tensorflow, cuda, cudnn은 아래 영상을 참고하였습니다.
-
-{% include video id='hHWkvEcDBO0', provider='youtube' %}
+이후 tensorflow, cuda, cudnn은 [영상](https://www.youtube.com/watch?v=hHWkvEcDBO0)을 참고하였습니다.
 
 
 
@@ -44,7 +42,7 @@ toc: True
 
 chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하는데 효과적입니다. (예: 크롬, 7-zip, java 등등 거의 모든 것)
 
-1. [Chocolatey Software | Installing Chocolatey](https://chocolatey.org/install) 에 들어가 줍니다.
+1. [Installing Chocolatey](https://chocolatey.org/install) 에 들어가 줍니다.
 
 2. Powershell 을 관리자 권한으로 켜줍니다.
 
@@ -54,7 +52,7 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
    > Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
    ```
 
-4. Powershell을 종료한 뒤 다시 관리자 권한으로 켜준뒤 명령어로 몇가지를 다운해 줍니다.
+4. Powershell을 종료하고 다시 관리자 권한으로 켜준뒤 명령어로 몇가지를 다운해 줍니다.
 
    * choco install adobereader
    * choco install vcredist2015 ( Microsoft Visual C++ Redistributable for Visual Studio 2015 Update 3 )
@@ -73,11 +71,10 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
 
  터미널을 관리자 권한으로 켜줍니다.
 
-1.  최신버전
+1. 최신버전
+   * wsl --install 을 입력합니다
 
-   * wsl --install 을 입력합니다.
-
-2.  구버전 (최신버전이 안될 때)
+2. 구버전 (최신버전이 안될 때)
 
    * 터미널에 아래 명령어를 입력합니다.
 
@@ -87,9 +84,11 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
 
    * 터미널에 `wsl --set-default-version 2` 를 입력합니다. ( 여기서 업데이트가 필요하면 wsl 2 커널을 다운로드 )
 
-   * Microsoft store 에서 ubuntu 20.04 를 다운해줍니다.
+     
 
-   * ubuntu 를 열어주고 잠깐 기다린 뒤, 새로운 os 의 아이디, 비밀번호를 설정합니다.
+3. Microsoft store 에서 ubuntu 20.04 를 다운해줍니다.
+
+4. ubuntu 를 열어주고 잠깐 기다린 뒤, 새로운 os 의 아이디, 비밀번호를 설정합니다.
 
 
 
@@ -123,10 +122,12 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
 
 7.  아래 줄들을 추가해줍니다.
 
+    "colorScheme": "vscode"는 개인취향으로 terminal splash 에서 마음에 드는 색을 고르면 됩니다.
+
     ```Ubuntu
             "defaults": 
             {
-                "colorScheme": "Monokai Night",
+                "colorScheme": "vscode", 
                 "font": 
                 {
                     "face": "MesloLGS NF"
@@ -137,27 +138,25 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
         "schemes": 
         [
             {
-                "background": "#0C0C0C",
-                "black": "#0C0C0C",
-                "blue": "#0037DA",
-                "brightBlack": "#767676",
-                "brightBlue": "#3B78FF",
-                "brightCyan": "#61D6D6",
-                "brightGreen": "#16C60C",
-                "brightPurple": "#B4009E",
-                "brightRed": "#E74856",
-                "brightWhite": "#F2F2F2",
-                "brightYellow": "#F9F1A5",
-                "cursorColor": "#FFFFFF",
-                "cyan": "#3A96DD",
-                "foreground": "#CCCCCC",
-                "green": "#13A10E",
-                "name": "Campbell",
-                "purple": "#881798",
-                "red": "#C50F1F",
-                "selectionBackground": "#FFFFFF",
-                "white": "#CCCCCC",
-                "yellow": "#C19C00"
+                "name": "vscode",
+                "background" : "#232323",
+                "black" : "#000000",
+                "blue" : "#579BD5",
+                "brightBlack" : "#797979",
+                "brightBlue" : "#9BDBFE",
+                "brightCyan" : "#2BC4E2",
+                "brightGreen" : "#1AD69C",
+                "brightPurple" : "#DF89DD",
+                "brightRed" : "#F6645D",
+                "brightWhite" : "#EAEAEA",
+                "brightYellow" : "#F6F353",
+                "cyan" : "#00B6D6",
+                "foreground" : "#D3D3D3",
+                "green" : "#3FC48A",
+                "purple" : "#CA5BC8",
+                "red" : "#D8473F",
+                "white" : "#EAEAEA",
+                "yellow" : "#D7BA7D"
             },
     ```
 
@@ -165,8 +164,17 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
 
 8. Ubuntu를 재시작 한뒤 옵션들을 쭉 진행해줍니다.
    *  특히 Instant prompt 설정에서 3번
+
    *  apply change to ~/.zshrc? - yes
 
-9.  마지막으로 vscode 에서 **terminal.integrated.default profile** 를 검색해서 **WSL** 로 기본 프롬프트를 바꿔줍니다.
+   *  만약 다시 설정하고 싶다면 `p10k configure` 를 입력하면 재설정 할 수 있습니다.
 
+      
    
+9.  vscode 에서 **terminal.integrated.default profile** 를 검색해서 **WSL** 로 기본 프롬프트를 바꿔줍니다. 
+
+
+
+
+
+
