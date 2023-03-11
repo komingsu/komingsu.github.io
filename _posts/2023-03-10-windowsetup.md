@@ -12,8 +12,6 @@ toc: True
 
 이후 tensorflow, cuda, cudnn은 [영상](https://www.youtube.com/watch?v=hHWkvEcDBO0)을 참고하였습니다.
 
-
-
 이 window setup은 window 10을 기준으로 만들었고, 그 이전 버전에는 호환되지 않습니다.
 
 
@@ -65,7 +63,7 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
 
    
 
-# WSL 
+# 2. WSL 
 
 ## setup
 
@@ -176,5 +174,43 @@ chocolatey 는 리눅스와 Mac과 같이 CLI 에서 무언갈 다운받고 하�
 
 
 
+## other setting
+
+1.  `sudo add-apt-repository ppa:deadsnakes/ppa` 를 입력합니다.
+2.  vscode 에서 WSL: Ubuntu 를 설정해줍니다.
+
+![image-20230312002310166](C:\Users\rh987\OneDrive\document\GitHub\komingsu.github.io\images\2023-03-10-windowsetup\image-20230312002310166.png){}
+
+3. vscode extention, Prettier 를 다운해줍니다.
+4. setting 에서 Editor.Format on save 부분을 체크해줍니다. (window, WSL 둘 다)
+5. [Releases · cli/cli (github.com)](https://github.com/cli/cli/releases) 에서 .deb 파일을 다운받아 줍니다 - (amd or arm).
+6. 다운받은 폴더에서 `sudo apt install ./{다운받은 파일 이름}` 을 입력합니다.
+7. `git config --global user.name "깃헙이름"`, `git config --global user.email "깃헙 이메일"` 를 입력합니다.
+8.  `gh auth login` 을 한 뒤 잘 따라가서 gh cli 와 연동함
+9. `gh config set editor "code --wait"`
 
 
+
+
+
+# 3. tensorflow
+
+
+
+1. `wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh ` 입력
+
+2. `bash Miniconda3-latest-Linux-x86_64.sh` 입력
+
+3. `conda update -n base conda` 입력
+
+4. `conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0` 입력
+
+5. `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/ `입력
+
+6. `conda create -n 가상환경이름 python=버전` 입력
+
+7. `conda source activate myenv ` 가상환경 사용
+
+8. `python3 -m pip install tensorflow`
+
+   
