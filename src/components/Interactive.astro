@@ -1,0 +1,28 @@
+---
+type Width = 'text' | 'wide' | 'full';
+
+interface Props {
+  caption?: string;
+  label?: string;
+  width?: Width;
+}
+
+const { caption, label, width = 'wide' } = Astro.props;
+const colClass = width === 'full' ? 'col-full' : width === 'wide' ? 'col-wide' : '';
+---
+
+{/* Wraps a hydrated island so every interactive figure gets the same frame and
+    caption treatment as a static one. */}
+<figure class:list={['interactive', colClass]}>
+  <div class="interactive__frame">
+    <slot />
+  </div>
+  {
+    (caption || label) && (
+      <figcaption class="figure__caption">
+        {label && <span class="figure__label">{label} </span>}
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

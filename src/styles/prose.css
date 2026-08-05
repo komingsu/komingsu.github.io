@@ -1,0 +1,622 @@
+/* ==========================================================================
+   Article layout — the distill.pub grid
+   ==========================================================================
+
+   Body copy sits in a fixed reading column. Figures opt into wider tracks by
+   adding a class, and margin notes float into the right-hand gutter. Named grid
+   lines let content say *which column it wants* instead of doing arithmetic:
+
+     grid-column: text   -> the reading column (default for everything)
+     grid-column: wide   -> reading column + margin gutter
+     grid-column: full   -> edge to edge
+
+   ========================================================================== */
+
+.prose {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(var(--w-gutter), 1fr)
+    [wide-start text-start] minmax(0, var(--w-text))
+    [text-end] minmax(0, var(--w-margin))
+    [wide-end] minmax(var(--w-gutter), 1fr)
+    [full-end];
+}
+
+.prose > * {
+  grid-column: text;
+}
+
+.prose > .col-wide {
+  grid-column: wide;
+}
+
+.prose > .col-full {
+  grid-column: full;
+}
+
+/* Below the point where a margin column can exist, collapse to one centred
+   column so `wide` and `text` stop diverging. */
+@media (max-width: 1180px) {
+  .prose {
+    grid-template-columns:
+      [full-start] minmax(var(--w-gutter), 1fr)
+      [wide-start text-start] minmax(0, var(--w-text))
+      [text-end wide-end] minmax(var(--w-gutter), 1fr)
+      [full-end];
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Vertical rhythm
+   -------------------------------------------------------------------------- */
+
+.prose > * + * {
+  margin-top: 1.15em;
+}
+
+.prose > h2,
+.prose > h3,
+.prose > h4 {
+  margin-top: 2.5em;
+  scroll-margin-top: 5rem;
+}
+
+.prose > h2 + *,
+.prose > h3 + *,
+.prose > h4 + * {
+  margin-top: 0.6em;
+}
+
+.prose > h2 {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.02em;
+}
+
+.prose > h3 {
+  font-size: var(--text-xl);
+}
+
+.prose > h4 {
+  font-size: var(--text-lg);
+  font-weight: 620;
+}
+
+.prose > p {
+  line-height: var(--leading-body);
+}
+
+/* Heading anchors: rehype-autolink-headings wraps the heading text in a link,
+   and the "#" marker is generated here so it never becomes real text (which
+   would leak into the table of contents). */
+.prose :is(h2, h3, h4, h5, h6) {
+  position: relative;
+}
+
+.heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.heading-anchor::before {
+  content: '#';
+  position: absolute;
+  left: -1.1em;
+  width: 1.1em;
+  color: var(--c-text-faint);
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.prose :is(h2, h3, h4, h5, h6):hover .heading-anchor::before,
+.heading-anchor:focus-visible::before {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  /* No gutter to sit in — the hover affordance is not useful on touch anyway. */
+  .heading-anchor::before {
+    content: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Inline elements
+   -------------------------------------------------------------------------- */
+
+.prose strong {
+  font-weight: 640;
+}
+
+.prose blockquote {
+  padding-left: 1.1rem;
+  border-left: 3px solid var(--c-border-strong);
+  color: var(--c-text-muted);
+  font-style: normal;
+}
+
+.prose :is(ul, ol) {
+  padding-left: 1.45rem;
+}
+
+.prose li + li {
+  margin-top: 0.35em;
+}
+
+.prose li > :is(ul, ol) {
+  margin-top: 0.35em;
+}
+
+.prose :is(code, kbd, samp) {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* Inline code only — `pre code` is styled by Shiki. */
+.prose :not(pre) > code {
+  padding: 0.15em 0.36em;
+  background: var(--c-bg-inset);
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+.prose pre {
+  margin-top: 1.4em;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  /* Long lines scroll inside the block instead of widening the page. */
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.prose pre:focus-visible {
+  outline-offset: 0;
+}
+
+/* Shiki emits both themes; swap which one is visible. */
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Tables ------------------------------------------------------------------ */
+
+.prose .table-wrap {
+  overflow-x: auto;
+  margin-top: 1.5em;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose :is(th, td) {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.prose th {
+  font-weight: 620;
+  border-bottom-color: var(--c-border-strong);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Math (KaTeX)
+   -------------------------------------------------------------------------- */
+
+.prose .katex {
+  font-size: 1.05em;
+}
+
+/* Display math can be wider than the column; let it scroll on its own. */
+.prose .katex-display {
+  margin: 1.6em 0;
+  padding: 0.2em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Figures
+   -------------------------------------------------------------------------- */
+
+.figure {
+  margin-top: 2em;
+}
+
+.figure__frame {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.figure--bordered .figure__frame {
+  border: 1px solid var(--c-border);
+  background: var(--c-bg-subtle);
+}
+
+.figure__caption {
+  margin-top: 0.7rem;
+  color: var(--c-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.figure__caption > .figure__label {
+  font-weight: 620;
+  color: var(--c-text);
+}
+
+/* Captions on wide/full figures stay aligned with the reading column so the
+   eye returns to a predictable left edge. */
+.prose > .col-full > .figure__caption,
+.prose > .col-full .figure__caption {
+  max-width: var(--w-text);
+  margin-inline: auto;
+  padding-inline: var(--w-gutter);
+}
+
+/* --------------------------------------------------------------------------
+   Margin notes  (distill's <d-footnote>-adjacent side commentary)
+   -------------------------------------------------------------------------- */
+
+/* `float` does nothing on a grid item, so the note is a zero-height anchor in
+   the text column with an absolutely-positioned body in the gutter. Keeping the
+   anchor in normal flow preserves document order (and therefore reading order
+   for screen readers) without pushing the following paragraph down. */
+.margin-note {
+  grid-column: text;
+  position: relative;
+  height: 0;
+  margin: 0 !important;
+}
+
+.margin-note__body {
+  position: absolute;
+  left: calc(100% + 1.5rem);
+  /* Rise slightly so the note aligns with the last line of the paragraph it
+     follows, rather than with the first line of the next one. */
+  top: -1.5em;
+  width: var(--w-margin);
+  color: var(--c-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.margin-note__counter {
+  margin-right: 0.3em;
+  color: var(--c-accent);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+/* No gutter to escape into — become an inset aside in normal flow. */
+@media (max-width: 1180px) {
+  .margin-note {
+    height: auto;
+    margin-block: 1.15em !important;
+  }
+
+  .margin-note__body {
+    position: static;
+    width: auto;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--c-border-strong);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Callouts
+   -------------------------------------------------------------------------- */
+
+.callout {
+  margin-top: 1.6em;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid var(--c-border);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: var(--c-bg-subtle);
+  font-size: 0.9375rem;
+}
+
+.callout > * + * {
+  margin-top: 0.6em;
+}
+
+.callout__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 640;
+  font-size: 0.875rem;
+  letter-spacing: -0.005em;
+}
+
+.callout--note {
+  border-left-color: var(--c-border-strong);
+}
+
+.callout--tip {
+  border-left-color: #2f8f4e;
+  background: color-mix(in srgb, #2f8f4e 6%, var(--c-bg));
+}
+
+.callout--warn {
+  border-left-color: #c98a00;
+  background: color-mix(in srgb, #c98a00 8%, var(--c-bg));
+}
+
+.callout--math {
+  border-left-color: var(--c-accent);
+  background: var(--c-accent-bg);
+}
+
+/* --------------------------------------------------------------------------
+   Interactive figures
+   -------------------------------------------------------------------------- */
+
+.interactive {
+  margin-top: 2em;
+}
+
+.interactive__frame {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-bg-subtle);
+  overflow: hidden;
+}
+
+/* Reserves height while the island hydrates, so the page does not jump. */
+.interactive__fallback {
+  display: grid;
+  place-items: center;
+  min-height: 18rem;
+  color: var(--c-text-faint);
+  font-size: var(--text-sm);
+}
+
+/* Shared control styling for React islands. --------------------------------- */
+
+.ctrl-grid {
+  display: grid;
+  gap: 0.85rem 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  padding: 0.95rem 1.1rem;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-bg);
+}
+
+.ctrl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: var(--text-xs);
+}
+
+.ctrl__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--c-text-muted);
+  font-weight: 550;
+}
+
+.ctrl__value {
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.ctrl input[type='range'] {
+  width: 100%;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--c-accent);
+  cursor: pointer;
+}
+
+.ctrl select,
+.btn {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius);
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--c-bg-inset);
+}
+
+.btn--primary {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: #fff;
+  font-weight: 580;
+}
+
+.btn--primary:hover {
+  background: var(--c-accent-hover);
+  border-color: var(--c-accent-hover);
+}
+
+.btn-row {
+  display: flex;
+  /* Overrides `.ctrl`'s column direction when both classes are on one element. */
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: end;
+}
+
+/* --------------------------------------------------------------------------
+   Footnotes (GFM) + bibliography
+   -------------------------------------------------------------------------- */
+
+.prose .footnotes {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+  font-size: 0.875rem;
+}
+
+.prose .footnotes h2 {
+  font-size: var(--text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-faint);
+}
+
+.prose sup a,
+.prose .data-footnote-backref {
+  text-decoration: none;
+}
+
+.bibliography {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--c-border);
+  font-size: 0.875rem;
+}
+
+.bibliography__title {
+  margin-bottom: 1rem;
+  font-size: var(--text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-faint);
+}
+
+.bibliography__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.bibliography__item {
+  display: grid;
+  grid-template-columns: 2.1rem 1fr;
+  gap: 0.5rem;
+  color: var(--c-text-muted);
+  line-height: 1.5;
+  scroll-margin-top: 5rem;
+}
+
+.bibliography__marker {
+  color: var(--c-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.bibliography__item cite {
+  color: var(--c-text);
+  font-style: normal;
+  font-weight: 550;
+}
+
+.cite-ref {
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  padding-inline: 0.1em;
+}
+
+/* --------------------------------------------------------------------------
+   Article header + table of contents
+   -------------------------------------------------------------------------- */
+
+.article-header {
+  padding-block: 3.5rem 2rem;
+}
+
+.article-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--c-text-faint);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.article-header__title {
+  font-size: var(--text-3xl);
+  letter-spacing: -0.025em;
+}
+
+.article-header__desc {
+  margin-top: 0.9rem;
+  color: var(--c-text-muted);
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.article-header__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.25rem;
+}
+
+.toc {
+  margin-top: 2rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-bg-subtle);
+  font-size: 0.875rem;
+}
+
+.toc__title {
+  margin-bottom: 0.5rem;
+  color: var(--c-text-faint);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.toc__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.toc__item--h3 {
+  padding-left: 1rem;
+}
+
+.toc__link {
+  color: var(--c-text-muted);
+  text-decoration: none;
+  line-height: 1.45;
+}
+
+.toc__link:hover {
+  color: var(--c-accent);
+  text-decoration: underline;
+}

@@ -1,0 +1,48 @@
+---
+import PostCard from '../PostCard.astro';
+import type { Locale } from '../../consts';
+import { useTranslations } from '../../i18n/ui';
+import type { PostView } from '../../lib/posts';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  lede?: string;
+  posts: PostView[];
+}
+
+const { locale, title, lede, posts } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<div class="shell">
+  <header class="page-header">
+    <h1 class="page-header__title">{title}</h1>
+    {lede && <p class="page-header__lede">{lede}</p>}
+    <p class="page-header__lede" style="font-size:.875rem;margin-top:.5rem">
+      {t('posts.count')(posts.length)}
+    </p>
+  </header>
+
+  {
+    posts.length === 0 ? (
+      <p style="color:var(--c-text-muted)">{t('home.empty')}</p>
+    ) : (
+      <ul class="post-list">
+        {posts.map((post) => (
+          <PostCard
+            href={post.href}
+            title={post.entry.data.title}
+            description={post.entry.data.description}
+            pubDate={post.entry.data.pubDate}
+            tags={post.entry.data.tags}
+            locale={locale}
+            interactive={post.entry.data.interactive}
+            draft={post.entry.data.draft}
+            readingTime={post.readingTime}
+          />
+        ))}
+      </ul>
+    )
+  }
+</div>

@@ -1,0 +1,48 @@
+---
+import { render } from 'astro:content';
+
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+import { DEFAULT_LOCALE } from '../../../consts';
+import type { Heading } from '../../../types';
+import { getAllPosts, getAlternates, getNeighbours, type PostView } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await getAllPosts();
+
+  return Promise.all(
+    all.map(async (post) => {
+      const sameLocale = all.filter((p) => p.locale === post.locale);
+      return {
+        params: {
+          locale: post.locale === DEFAULT_LOCALE ? undefined : post.locale,
+          slug: post.slug,
+        },
+        props: {
+          post,
+          alternates: await getAlternates(post, all),
+          ...getNeighbours(post, sameLocale),
+        },
+      };
+    }),
+  );
+}
+
+const { post, alternates, newer, older } = Astro.props as {
+  post: PostView;
+  alternates: Record<string, string>;
+  newer?: PostView;
+  older?: PostView;
+};
+
+const { Content, headings } = await render(post.entry);
+---
+
+<ArticleLayout
+  post={post}
+  headings={headings as Heading[]}
+  alternates={alternates}
+  newer={newer}
+  older={older}
+>
+  <Content />
+</ArticleLayout>

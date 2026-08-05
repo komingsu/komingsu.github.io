@@ -1,0 +1,37 @@
+---
+import type { Locale } from '../consts';
+import type { Heading } from '../types';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  headings: Heading[];
+  locale: Locale;
+  /** Deepest level to list. h4+ tends to make the box longer than it is useful. */
+  maxDepth?: number;
+}
+
+const { headings, locale, maxDepth = 3 } = Astro.props;
+const t = useTranslations(locale);
+
+// h1 is the article title, which is already above this box.
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= maxDepth);
+---
+
+{
+  items.length > 1 && (
+    <nav class="toc" aria-labelledby="toc-title">
+      <p class="toc__title" id="toc-title">
+        {t('post.toc')}
+      </p>
+      <ol class="toc__list">
+        {items.map((heading) => (
+          <li class:list={['toc__item', `toc__item--h${heading.depth}`]}>
+            <a class="toc__link" href={`#${heading.slug}`}>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}

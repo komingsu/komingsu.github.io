@@ -1,0 +1,152 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+import '../styles/prose.css';
+
+import { SITE, LOCALE_TAGS, type Locale } from '../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** `article` adds publish/modify times and an Article JSON-LD node. */
+  type?: 'website' | 'article';
+  image?: string;
+  imageAlt?: string;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  /** Locale -> path map, used for hreflang alternates. */
+  alternates?: Partial<Record<Locale, string>>;
+  /** Keeps drafts and tag pages out of search indexes. */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  locale,
+  type = 'website',
+  image,
+  imageAlt,
+  publishedAt,
+  updatedAt,
+  tags = [],
+  alternates = {},
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
+const ogImage = new URL(image ?? SITE.defaultOgImage, Astro.site);
+// The home page title is already the site name; avoid "Ko Minsu | Ko Minsu".
+const fullTitle = title === SITE.title ? title : `${title} | ${SITE.title}`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE.url}/#website`,
+      url: SITE.url,
+      name: SITE.title,
+      description: SITE.description[locale],
+      inLanguage: LOCALE_TAGS[locale],
+      publisher: { '@id': `${SITE.url}/#person` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#person`,
+      name: SITE.author,
+      url: SITE.url,
+      sameAs: [SITE.github],
+    },
+    ...(type === 'article'
+      ? [
+          {
+            '@type': 'BlogPosting',
+            '@id': `${canonical.href}#article`,
+            headline: title,
+            description,
+            image: ogImage.href,
+            inLanguage: LOCALE_TAGS[locale],
+            datePublished: publishedAt?.toISOString(),
+            dateModified: (updatedAt ?? publishedAt)?.toISOString(),
+            keywords: tags.join(', '),
+            author: { '@id': `${SITE.url}/#person` },
+            publisher: { '@id': `${SITE.url}/#person` },
+            isPartOf: { '@id': `${SITE.url}/#website` },
+            mainEntityOfPage: canonical.href,
+          },
+        ]
+      : []),
+  ],
+};
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={SITE.author} />
+<link rel="canonical" href={canonical} />
+
+{noindex && <meta name="robots" content="noindex, follow" />}
+
+<!-- hreflang: every locale that has this page, plus x-default pointing at Korean -->
+{
+  Object.entries(alternates).map(([loc, path]) => (
+    <link rel="alternate" hreflang={LOCALE_TAGS[loc as Locale]} href={new URL(path!, Astro.site)} />
+  ))
+}
+{
+  alternates.ko && (
+    <link rel="alternate" hreflang="x-default" href={new URL(alternates.ko, Astro.site)} />
+  )
+}
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.title} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:alt" content={imageAlt ?? title} />
+<meta property="og:locale" content={LOCALE_TAGS[locale].replace('-', '_')} />
+{
+  publishedAt && type === 'article' && (
+    <meta property="article:published_time" content={publishedAt.toISOString()} />
+  )
+}
+{
+  updatedAt && type === 'article' && (
+    <meta property="article:modified_time" content={updatedAt.toISOString()} />
+  )
+}
+{type === 'article' && tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- Feeds & icons -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${SITE.title} — 한국어`}
+  href={new URL('/rss.xml', Astro.site)}
+/>
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${SITE.title} — English`}
+  href={new URL('/en/rss.xml', Astro.site)}
+/>
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />

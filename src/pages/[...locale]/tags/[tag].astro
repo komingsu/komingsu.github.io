@@ -1,0 +1,59 @@
+---
+import PostList from '../../../components/pages/PostList.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { DEFAULT_LOCALE, LOCALES, type Locale } from '../../../consts';
+import { localizePath, useTranslations } from '../../../i18n/ui';
+import { collectTags, getPosts, type PostView } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const paths = [];
+
+  for (const locale of LOCALES) {
+    const posts = await getPosts(locale);
+    for (const { tag } of collectTags(posts)) {
+      paths.push({
+        params: {
+          locale: locale === DEFAULT_LOCALE ? undefined : locale,
+          tag,
+        },
+        props: {
+          locale,
+          tag,
+          posts: posts.filter((p) => p.entry.data.tags.includes(tag)),
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { locale, tag, posts } = Astro.props as {
+  locale: Locale;
+  tag: string;
+  posts: PostView[];
+};
+
+const t = useTranslations(locale);
+const title = t('tags.postsTagged')(tag);
+
+// A tag page exists in a locale only if some post there carries the tag, so
+// alternates are computed rather than assumed.
+const alternates: Partial<Record<Locale, string>> = {};
+for (const loc of LOCALES) {
+  const localePosts = await getPosts(loc);
+  if (localePosts.some((p) => p.entry.data.tags.includes(tag))) {
+    alternates[loc] = localizePath(`/tags/${encodeURIComponent(tag)}`, loc);
+  }
+}
+---
+
+<BaseLayout
+  title={`#${tag}`}
+  description={title}
+  locale={locale}
+  alternates={alternates}
+  noindex={posts.length < 2}
+>
+  <PostList locale={locale} title={`#${tag}`} lede={title} posts={posts} />
+</BaseLayout>

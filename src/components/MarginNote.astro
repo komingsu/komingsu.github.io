@@ -1,0 +1,17 @@
+---
+interface Props {
+  /** Optional marker (a number or symbol) shown before the note. */
+  counter?: string | number;
+}
+
+const { counter } = Astro.props;
+---
+
+{/* Zero-height anchor in the text column; the body escapes into the gutter.
+    See the `.margin-note` rules in prose.css for why it is built this way. */}
+<aside class="margin-note">
+  <span class="margin-note__body">
+    {counter !== undefined && <span class="margin-note__counter">{counter}</span>}
+    <slot />
+  </span>
+</aside>

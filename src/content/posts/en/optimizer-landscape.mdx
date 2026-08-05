@@ -1,0 +1,147 @@
+---
+title: Why momentum wins in a narrow ravine
+description: An interactive look at why plain SGD zig-zags on ill-conditioned loss surfaces — change the learning rate yourself and watch it happen.
+pubDate: 2026-08-06
+tags: ['optimization', 'deep-learning', 'interactive']
+featured: true
+interactive: true
+translationOf: optimizer-landscape
+references:
+  - id: polyak1964
+    authors: B. T. Polyak
+    title: Some methods of speeding up the convergence of iteration methods
+    venue: USSR Computational Mathematics and Mathematical Physics
+    year: 1964
+  - id: nesterov1983
+    authors: Y. Nesterov
+    title: A method of solving a convex programming problem with convergence rate O(1/k²)
+    venue: Soviet Mathematics Doklady
+    year: 1983
+  - id: kingma2015
+    authors: D. P. Kingma, J. Ba
+    title: 'Adam: A Method for Stochastic Optimization'
+    venue: ICLR
+    year: 2015
+    url: https://arxiv.org/abs/1412.6980
+  - id: goh2017
+    authors: G. Goh
+    title: Why Momentum Really Works
+    venue: Distill
+    year: 2017
+    url: https://distill.pub/2017/momentum/
+---
+
+import Callout from '../../../components/Callout.astro';
+import Cite from '../../../components/Cite.astro';
+import Interactive from '../../../components/Interactive.astro';
+import MarginNote from '../../../components/MarginNote.astro';
+import OptimizerLab from '../../../components/interactive/OptimizerLab.tsx';
+
+"Turn the learning rate up and it diverges; turn it down and it crawls." Almost everyone
+hits this wall early. The usual reading is that the learning rate was chosen badly. Far
+more often, the **shape of the loss surface** had already narrowed the range of learning
+rates that could possibly work.
+
+This post is about getting a feel for that shape.
+
+## The problem is the condition number
+
+Start with the simplest quadratic:
+
+$$
+f(x, y) = \tfrac{1}{2}\left(a x^2 + b y^2\right)
+$$
+
+Its gradient is $\nabla f = (a x,\; b y)$, and gradient descent updates each coordinate
+independently:
+
+$$
+x_{t+1} = (1 - \eta a)\, x_t, \qquad y_{t+1} = (1 - \eta b)\, y_t
+$$
+
+The coordinates never interact — that is the whole point. Each shrinks by a factor of
+$|1 - \eta a|$ and $|1 - \eta b|$ per step, so convergence needs both factors below one.
+
+<MarginNote counter="†">
+  With $a$ the largest curvature and $b$ the smallest, $\kappa = a/b$ is the **condition
+  number**. In deep networks it routinely exceeds $10^4$.
+</MarginNote>
+
+Take $a > b$. The stability limit is set by the *large* curvature: $\eta < 2/a$. But the
+convergence *rate* is set by the small one — $y$ only shrinks by $(1 - \eta b)$ per step.
+So **the steepest direction caps the learning rate, and the flattest direction sets the
+actual speed.** The worse the ratio between them, the narrower the usable window.
+
+<Callout kind="math" title="In short">
+  Step size is bounded by the maximum curvature; time-to-converge is bounded by the
+  minimum. As $\kappa$ grows, those two constraints pull apart, and every learning rate
+  is a bad compromise for one of them.
+</Callout>
+
+## See it for yourself
+
+Pick **Ill-conditioned ravine** below and raise the learning rate slowly. Past a certain
+point SGD starts bouncing across the ravine instead of moving along it — and pushing right
+up to the edge of divergence barely speeds up the descent down the valley floor.
+
+Then watch **Momentum** at the same learning rate.
+
+<Interactive
+  label="Figure 1."
+  caption="SGD, Momentum and Adam run from the same starting point on four loss surfaces. Click the surface to move the start; tightly packed contours mean a steep gradient."
+  width="full"
+>
+  <OptimizerLab locale="en" client:visible />
+</Interactive>
+
+<MarginNote>
+  All three optimizers share one learning-rate slider. Adam normalizes by gradient
+  magnitude, so the same number means a very different step size for it — that difference
+  is part of what there is to see.
+</MarginNote>
+
+Things worth trying:
+
+- **Ravine with momentum 0.9**: the oscillating direction cancels itself out while the
+  consistent one accumulates.
+- **Rosenbrock at a high learning rate**: on a *curved* valley momentum overshoots into
+  the wall. Inertia is not free.
+- **Saddle point**: notice how long SGD loiters where the gradient nearly vanishes. Adam's
+  shrinking denominator gets it out sooner.
+- **Double well, moving the start**: the destination changes. This is what "initialization
+  matters" looks like on a non-convex problem.
+
+## What momentum actually does
+
+Momentum<Cite id="polyak1964" refs={frontmatter.references} /> adds one velocity term:
+
+$$
+v_{t+1} = \beta v_t - \eta \nabla f(x_t), \qquad x_{t+1} = x_t + v_{t+1}
+$$
+
+In a coordinate whose gradient flips sign every step, the terms of $v$ cancel. In one
+whose direction is consistent, they accumulate like a geometric series, pushing the
+effective learning rate up to $\eta / (1 - \beta)$. At $\beta = 0.9$ that is roughly a
+10× boost along the flat direction.
+
+<Callout kind="tip" title="Why 0.9">
+  Read $1/(1-\beta)$ as the effective multiplier and 0.9 simply means "10×". 0.99 means
+  100×, at the cost of turning much more slowly. Push momentum to 0.99 on Rosenbrock above
+  and the cost is immediately visible.
+</Callout>
+
+Adam<Cite id="kingma2015" refs={frontmatter.references} /> attacks the other side: it
+divides each coordinate's step by a running second moment of its gradient, automatically
+shrinking steps along high-curvature directions. That is conditioning solved by rescaling
+the surface rather than by remembering where you came from.
+
+Goh's spectral treatment<Cite id="goh2017" refs={frontmatter.references} /> is still the
+best explanation of momentum, and the optimal acceleration rate is
+Nesterov's<Cite id="nesterov1983" refs={frontmatter.references} />.
+
+## Caveats
+
+Every surface above is two-dimensional and noiseless. Real training adds mini-batch noise,
+and once the dimension passes $10^8$ it is fair to ask how much the "valley" picture still
+buys you. Still — when someone asks why the loss spikes after they raised the learning
+rate, this is the first thing to check.

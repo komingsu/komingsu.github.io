@@ -1,0 +1,23 @@
+---
+import PostList from '../../../components/pages/PostList.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SITE, type Locale } from '../../../consts';
+import { useTranslations } from '../../../i18n/ui';
+import { getPosts, staticAlternates } from '../../../lib/posts';
+import { localePaths } from '../../../lib/routes';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as { locale: Locale };
+const t = useTranslations(locale);
+const posts = await getPosts(locale);
+---
+
+<BaseLayout
+  title={t('posts.title')}
+  description={SITE.description[locale]}
+  locale={locale}
+  alternates={staticAlternates('/posts')}
+>
+  <PostList locale={locale} title={t('posts.title')} posts={posts} />
+</BaseLayout>

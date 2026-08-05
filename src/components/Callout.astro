@@ -1,0 +1,29 @@
+---
+type Kind = 'note' | 'tip' | 'warn' | 'math';
+
+interface Props {
+  kind?: Kind;
+  title?: string;
+}
+
+const { kind = 'note', title } = Astro.props;
+
+const glyph: Record<Kind, string> = {
+  note: 'ℹ',
+  tip: '✔',
+  warn: '⚠',
+  math: '∑',
+};
+---
+
+<aside class:list={['callout', `callout--${kind}`]}>
+  {
+    title && (
+      <p class="callout__title">
+        <span aria-hidden="true">{glyph[kind]}</span>
+        {title}
+      </p>
+    )
+  }
+  <slot />
+</aside>

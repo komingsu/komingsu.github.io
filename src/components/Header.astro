@@ -1,0 +1,46 @@
+---
+import LangSwitch from './LangSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { SITE, type Locale } from '../consts';
+import { localizePath, useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  alternates: Partial<Record<Locale, string>>;
+}
+
+const { locale, alternates } = Astro.props;
+const t = useTranslations(locale);
+
+const links = [
+  { href: localizePath('/posts', locale), label: t('nav.posts') },
+  { href: localizePath('/tags', locale), label: t('nav.tags') },
+  { href: localizePath('/about', locale), label: t('nav.about') },
+];
+
+// Strip the trailing slash so `/posts` and `/posts/` compare equal.
+const here = Astro.url.pathname.replace(/(.)\/$/, '$1');
+const isActive = (href: string) => here === href || here.startsWith(`${href}/`);
+---
+
+<header class="site-header">
+  <div class="shell site-header__inner">
+    <a class="site-header__brand" href={localizePath('/', locale)}>{SITE.title}</a>
+
+    <nav class="site-nav" aria-label={t('nav.home')}>
+      {
+        links.map((link) => (
+          <a
+            class="site-nav__link"
+            href={link.href}
+            aria-current={isActive(link.href) ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <LangSwitch locale={locale} alternates={alternates} />
+      <ThemeToggle locale={locale} />
+    </nav>
+  </div>
+</header>

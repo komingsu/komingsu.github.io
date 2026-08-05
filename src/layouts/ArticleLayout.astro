@@ -1,0 +1,107 @@
+---
+import Bibliography from '../components/Bibliography.astro';
+import Toc from '../components/Toc.astro';
+import BaseLayout from './BaseLayout.astro';
+import type { Locale } from '../consts';
+import type { Heading } from '../types';
+import { formatDate, localizePath, useTranslations } from '../i18n/ui';
+import type { PostView } from '../lib/posts';
+
+interface Props {
+  post: PostView;
+  headings: Heading[];
+  alternates: Partial<Record<Locale, string>>;
+  newer?: PostView;
+  older?: PostView;
+}
+
+const { post, headings, alternates, newer, older } = Astro.props;
+const { locale, readingTime } = post;
+const data = post.entry.data;
+const t = useTranslations(locale);
+
+// Frontmatter `cover` is an ImageMetadata once the schema resolves it.
+const ogImage = data.cover?.src;
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  locale={locale}
+  type="article"
+  image={ogImage}
+  imageAlt={data.coverAlt}
+  publishedAt={data.pubDate}
+  updatedAt={data.updatedDate}
+  tags={data.tags}
+  alternates={alternates}
+  noindex={data.draft}
+>
+  <article>
+    <header class="shell article-header">
+      <div class="article-header__meta">
+        <time datetime={data.pubDate.toISOString()}>
+          {t('post.published')} {formatDate(data.pubDate, locale)}
+        </time>
+        {
+          data.updatedDate && (
+            <span>
+              · {t('post.updated')} {formatDate(data.updatedDate, locale)}
+            </span>
+          )
+        }
+        <span>· {t('post.readingTime')(readingTime)}</span>
+        {data.interactive && <span class="pill pill--accent">{t('post.interactive')}</span>}
+        {data.draft && <span class="pill pill--warn">{t('post.draft')}</span>}
+      </div>
+
+      <h1 class="article-header__title">{data.title}</h1>
+      <p class="article-header__desc">{data.description}</p>
+
+      {
+        data.tags.length > 0 && (
+          <div class="article-header__tags">
+            {data.tags.map((tag) => (
+              <a class="pill" href={localizePath(`/tags/${encodeURIComponent(tag)}`, locale)}>
+                #{tag}
+              </a>
+            ))}
+          </div>
+        )
+      }
+
+      <Toc headings={headings} locale={locale} />
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <footer class="shell">
+      <Bibliography refs={data.references} locale={locale} />
+
+      <nav class="post-nav" aria-label={t('nav.posts')}>
+        {
+          newer ? (
+            <a class="post-nav__link" href={newer.href} rel="prev">
+              <span class="post-nav__label">← {t('post.next')}</span>
+              <span class="post-nav__title">{newer.entry.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          older ? (
+            <a class="post-nav__link post-nav__link--next" href={older.href} rel="next">
+              <span class="post-nav__label">{t('post.prev')} →</span>
+              <span class="post-nav__title">{older.entry.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+      </nav>
+    </footer>
+  </article>
+</BaseLayout>

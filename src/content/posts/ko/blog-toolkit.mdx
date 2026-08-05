@@ -1,0 +1,140 @@
+---
+title: 이 블로그에서 글을 쓰는 방법
+description: 수식, 여백 주석, 콜아웃, 인터랙티브 컴포넌트 — 글에서 쓸 수 있는 도구를 한 번에 모아 둔 참고용 글입니다.
+pubDate: 2026-08-05
+tags: ['meta']
+---
+
+import Callout from '../../../components/Callout.astro';
+import MarginNote from '../../../components/MarginNote.astro';
+
+새 글은 `src/content/posts/ko/<슬러그>.mdx` 에 만듭니다. 영어판은 같은 슬러그로
+`en/` 아래에 두면 자동으로 언어 전환 버튼이 연결됩니다. 이 글은 사용할 수 있는
+구성 요소를 한 곳에 모아 둔 참고용 문서입니다.
+
+## 프론트매터
+
+```yaml
+---
+title: 글 제목
+description: 목록과 검색 결과, 소셜 카드에 쓰이는 한 문장 요약
+pubDate: 2026-08-06
+tags: ['optimization', 'interactive']
+featured: true      # 홈 상단에 고정
+interactive: true   # 목록에 "인터랙티브" 배지 표시
+draft: true         # 목록·피드에서 숨김 (dev 서버에서는 보임)
+---
+```
+
+스키마는 `src/content.config.ts` 에 정의돼 있어서, 필드를 빠뜨리거나 날짜 형식이
+틀리면 **빌드가 실패합니다.** 배포 후에 깨진 걸 발견하는 것보다 낫습니다.
+
+## 수식
+
+인라인은 `$...$`, 블록은 `$$...$$` 입니다. KaTeX로 빌드 시점에 렌더링되므로
+브라우저에서 수식 때문에 레이아웃이 흔들리지 않습니다.
+
+$$
+\frac{\partial \mathcal{L}}{\partial \theta}
+= \mathbb{E}_{x \sim p(x)}\!\left[\nabla_\theta \log p_\theta(x)\right]
+$$
+
+## 여백 주석
+
+<MarginNote counter="1">
+  넓은 화면에서는 본문 오른쪽 여백에 뜨고, 좁은 화면에서는 본문 안으로 접혀
+  들어옵니다.
+</MarginNote>
+
+본문을 끊지 않고 곁가지를 달고 싶을 때 `<MarginNote>` 를 씁니다. 각주와 달리
+독자가 시선을 아래로 옮기지 않아도 읽을 수 있습니다. 일반 각주가 필요하면
+마크다운 문법[^각주]을 그대로 쓰면 됩니다.
+
+[^각주]: 각주는 글 맨 아래에 모입니다.
+
+## 콜아웃
+
+<Callout kind="note" title="note">
+  기본형. 문맥을 보충하는 정보에 씁니다.
+</Callout>
+
+<Callout kind="tip" title="tip">
+  실전 팁이나 권장 사항.
+</Callout>
+
+<Callout kind="warn" title="warn">
+  흔히 틀리는 지점, 주의해야 할 함정.
+</Callout>
+
+<Callout kind="math" title="math">
+  핵심 결과나 정리를 강조할 때.
+</Callout>
+
+## 그림과 폭
+
+`<Figure>` 는 `width` 로 세 가지 폭을 지원합니다.
+
+| 값 | 폭 |
+| --- | --- |
+| `text` | 본문 폭 (기본값) |
+| `wide` | 본문 + 여백 |
+| `full` | 화면 전체 |
+
+```mdx
+import Figure from '../../../components/Figure.astro';
+import diagram from './diagram.png';
+
+<Figure
+  src={diagram}
+  alt="스크린 리더가 읽을 설명"
+  label="그림 1."
+  caption="캡션"
+  width="wide"
+/>
+```
+
+이미지를 `import` 하면 Astro가 크기를 알아내서 여러 해상도로 변환하고 `width`/`height`
+속성을 넣어 줍니다. 레이아웃이 밀리는 현상이 사라집니다.
+
+## 인터랙티브 컴포넌트
+
+React 컴포넌트를 만들어 `<Interactive>` 로 감싸면 됩니다.
+
+```mdx
+import Interactive from '../../../components/Interactive.astro';
+import MyDemo from '../../../components/interactive/MyDemo.tsx';
+
+<Interactive label="그림 2." caption="설명" width="full">
+  <MyDemo client:visible />
+</Interactive>
+```
+
+<Callout kind="warn" title="client 지시어를 잊지 마세요">
+  `client:visible` 이 없으면 컴포넌트는 정적 HTML로만 출력되고 아무 반응도 하지
+  않습니다. 화면에 들어올 때 로드되는 `client:visible` 이 대부분의 경우 정답이고,
+  첫 화면에 보이는 요소라면 `client:load` 를 씁니다.
+</Callout>
+
+지시어를 붙인 컴포넌트만 JS를 내려받습니다. 인터랙티브 요소가 없는 글은 자바스크립트가
+사실상 0바이트로 나갑니다.
+
+## 인용
+
+프론트매터에 `references` 를 정의하고 본문에서 번호를 매깁니다.
+
+```mdx
+모멘텀<Cite id="polyak1964" refs={frontmatter.references} />은 ...
+```
+
+번호는 프론트매터 순서대로 자동으로 붙고, 글 끝에 참고문헌 목록이 생성됩니다.
+없는 `id` 를 참조하면 빌드가 실패합니다.
+
+## 로컬에서 확인
+
+```bash
+cd ~/blog
+npm run dev     # http://localhost:4321
+npm run build   # 배포 전 최종 확인
+```
+
+`main` 에 푸시하면 GitHub Actions가 빌드해서 자동 배포합니다.

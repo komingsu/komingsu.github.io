@@ -1,0 +1,27 @@
+---
+import type { Reference } from '../types';
+
+interface Props {
+  /** Must match a `references[].id` in the post frontmatter. */
+  id: string;
+  /** Pass `frontmatter.references` so the marker can be numbered. */
+  refs: Reference[];
+}
+
+const { id, refs } = Astro.props;
+
+const index = refs.findIndex((ref) => ref.id === id);
+if (index === -1) {
+  // Fail the build rather than silently shipping a dangling "[?]".
+  throw new Error(
+    `<Cite id="${id}"> has no matching entry in the post's frontmatter \`references\`. ` +
+      `Known ids: ${refs.map((r) => r.id).join(', ') || '(none)'}`,
+  );
+}
+
+const entry = refs[index]!;
+---
+
+<sup class="cite-ref"
+  ><a href={`#ref-${id}`} title={`${entry.authors} — ${entry.title}`}>[{index + 1}]</a></sup
+>

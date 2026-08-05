@@ -1,0 +1,59 @@
+---
+import { Image } from 'astro:assets';
+
+type Width = 'text' | 'wide' | 'full';
+
+interface Props {
+  /** Import the image in the MDX frontmatter to get width/height for free. */
+  src: ImageMetadata | string;
+  alt: string;
+  caption?: string;
+  /** Prefix rendered in bold before the caption, e.g. "Figure 1." */
+  label?: string;
+  width?: Width;
+  bordered?: boolean;
+  /** Above-the-fold figures should load eagerly to avoid a late LCP. */
+  eager?: boolean;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  label,
+  width = 'text',
+  bordered = false,
+  eager = false,
+} = Astro.props;
+
+const colClass = width === 'full' ? 'col-full' : width === 'wide' ? 'col-wide' : '';
+const isRemote = typeof src === 'string';
+---
+
+<figure class:list={['figure', colClass, bordered && 'figure--bordered']}>
+  <div class="figure__frame">
+    {
+      isRemote ? (
+        <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          widths={[640, 960, 1280, 1920]}
+          sizes="(max-width: 48rem) 100vw, 46rem"
+        />
+      )
+    }
+  </div>
+  {
+    (caption || label) && (
+      <figcaption class="figure__caption">
+        {label && <span class="figure__label">{label} </span>}
+        {caption}
+        <slot />
+      </figcaption>
+    )
+  }
+</figure>

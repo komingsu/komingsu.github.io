@@ -1,0 +1,42 @@
+---
+import { LOCALES, LOCALE_NAMES, type Locale } from '../consts';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  /** Target path per locale. A missing entry renders as disabled. */
+  alternates: Partial<Record<Locale, string>>;
+}
+
+const { locale, alternates } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<div class="lang-switch" role="group" aria-label={t('lang.switch')}>
+  {
+    LOCALES.map((loc) => {
+      const href = alternates[loc];
+      const isCurrent = loc === locale;
+      const label = loc.toUpperCase();
+
+      if (isCurrent) {
+        return (
+          <span class="lang-switch__option" aria-current="true" lang={loc}>
+            {label}
+          </span>
+        );
+      }
+
+      return href ? (
+        <a class="lang-switch__option" href={href} lang={loc} hreflang={loc}>
+          <span class="sr-only">{LOCALE_NAMES[loc]}</span>
+          <span aria-hidden="true">{label}</span>
+        </a>
+      ) : (
+        <span class="lang-switch__option" aria-disabled="true" title={t('lang.unavailable')}>
+          {label}
+        </span>
+      );
+    })
+  }
+</div>

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SITE, type Locale } from '../../../consts';
+import { localizePath, useTranslations } from '../../../i18n/ui';
+import { collectTags, getPosts, staticAlternates } from '../../../lib/posts';
+import { localePaths } from '../../../lib/routes';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as { locale: Locale };
+const t = useTranslations(locale);
+
+const tags = collectTags(await getPosts(locale));
+---
+
+<BaseLayout
+  title={t('tags.title')}
+  description={SITE.description[locale]}
+  locale={locale}
+  alternates={staticAlternates('/tags')}
+>
+  <div class="shell">
+    <header class="page-header">
+      <h1 class="page-header__title">{t('tags.title')}</h1>
+    </header>
+
+    {
+      tags.length === 0 ? (
+        <p style="color:var(--c-text-muted)">{t('home.empty')}</p>
+      ) : (
+        <ul class="tag-cloud">
+          {tags.map(({ tag, count }) => (
+            <li>
+              <a class="pill" href={localizePath(`/tags/${encodeURIComponent(tag)}`, locale)}>
+                #{tag}
+                <span style="color:var(--c-text-faint)">{count}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</BaseLayout>

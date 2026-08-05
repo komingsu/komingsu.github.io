@@ -1,0 +1,54 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { LOCALE_TAGS, type Locale } from '../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  type?: 'website' | 'article';
+  image?: string;
+  imageAlt?: string;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  alternates?: Partial<Record<Locale, string>>;
+  noindex?: boolean;
+}
+
+const { locale, alternates = {}, ...head } = Astro.props;
+---
+
+<!doctype html>
+<html lang={LOCALE_TAGS[locale]}>
+  <head>
+    <BaseHead locale={locale} alternates={alternates} {...head} />
+    <script is:inline>
+      // Runs before first paint so the correct theme is already on <html> and
+      // there is no white flash for dark-mode visitors. Deliberately inline and
+      // un-bundled — a deferred module would be too late.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark = stored
+            ? stored === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기 / Skip to content</a>
+    <Header locale={locale} alternates={alternates} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

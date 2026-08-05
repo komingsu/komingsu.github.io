@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DEFAULT_LOCALE } from '../consts';
+import { localizePath, useTranslations } from '../i18n/ui';
+
+// A 404 is served for unknown paths in either locale, so it stays on the
+// default locale and offers a way back rather than guessing.
+const locale = DEFAULT_LOCALE;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  title={t('notfound.title')}
+  description={t('notfound.body')}
+  locale={locale}
+  noindex
+>
+  <div class="shell notice">
+    <h1 class="notice__title">404 — {t('notfound.title')}</h1>
+    <p class="notice__body">{t('notfound.body')}</p>
+    <p style="margin-top:1.5rem">
+      <a href={localizePath('/', locale)}>{t('notfound.home')}</a>
+    </p>
+  </div>
+</BaseLayout>

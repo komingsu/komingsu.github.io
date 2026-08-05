@@ -1,0 +1,80 @@
+---
+import PostCard from '../PostCard.astro';
+import { SITE, type Locale } from '../../consts';
+import { localizePath, useTranslations } from '../../i18n/ui';
+import { getPosts } from '../../lib/posts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const posts = await getPosts(locale);
+const featured = posts.filter((p) => p.entry.data.featured).slice(0, 3);
+const featuredIds = new Set(featured.map((p) => p.entry.id));
+const recent = posts.filter((p) => !featuredIds.has(p.entry.id)).slice(0, 8);
+---
+
+<div class="shell">
+  <header class="page-header">
+    <h1 class="page-header__title">{SITE.title}</h1>
+    <p class="page-header__lede">{t('home.tagline')}</p>
+    <p class="page-header__lede" style="font-size:1rem;margin-top:.5rem">{t('home.intro')}</p>
+  </header>
+
+  {
+    posts.length === 0 ? (
+      <p style="color:var(--c-text-muted)">{t('home.empty')}</p>
+    ) : (
+      <>
+        {featured.length > 0 && (
+          <>
+            <h2 class="section-heading">{t('home.featured')}</h2>
+            <ul class="post-list">
+              {featured.map((post) => (
+                <PostCard
+                  href={post.href}
+                  title={post.entry.data.title}
+                  description={post.entry.data.description}
+                  pubDate={post.entry.data.pubDate}
+                  tags={post.entry.data.tags}
+                  locale={locale}
+                  interactive={post.entry.data.interactive}
+                  draft={post.entry.data.draft}
+                  readingTime={post.readingTime}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+
+        {recent.length > 0 && (
+          <>
+            <h2 class="section-heading">{t('home.recent')}</h2>
+            <ul class="post-list">
+              {recent.map((post) => (
+                <PostCard
+                  href={post.href}
+                  title={post.entry.data.title}
+                  description={post.entry.data.description}
+                  pubDate={post.entry.data.pubDate}
+                  tags={post.entry.data.tags}
+                  locale={locale}
+                  interactive={post.entry.data.interactive}
+                  draft={post.entry.data.draft}
+                  readingTime={post.readingTime}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+
+        <p style="margin-top:2rem">
+          <a href={localizePath('/posts', locale)}>{t('home.all')} →</a>
+        </p>
+      </>
+    )
+  }
+</div>

@@ -1,0 +1,52 @@
+---
+import type { Locale } from '../consts';
+import { formatDate, useTranslations } from '../i18n/ui';
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  locale: Locale;
+  interactive?: boolean;
+  draft?: boolean;
+  readingTime?: number;
+}
+
+const {
+  href,
+  title,
+  description,
+  pubDate,
+  tags = [],
+  locale,
+  interactive = false,
+  draft = false,
+  readingTime,
+} = Astro.props;
+
+const t = useTranslations(locale);
+---
+
+<li>
+  <a class="post-card" href={href}>
+    <div class="post-card__meta">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate, locale)}</time>
+      {readingTime && <span>· {t('post.readingTime')(readingTime)}</span>}
+      {interactive && <span class="pill pill--accent">{t('post.interactive')}</span>}
+      {draft && <span class="pill pill--warn">{t('post.draft')}</span>}
+    </div>
+    <h3 class="post-card__title">{title}</h3>
+    <p class="post-card__desc">{description}</p>
+    {
+      tags.length > 0 && (
+        <div class="post-card__meta" style="margin-top:.5rem">
+          {tags.slice(0, 4).map((tag) => (
+            <span class="pill">#{tag}</span>
+          ))}
+        </div>
+      )
+    }
+  </a>
+</li>

@@ -1,0 +1,42 @@
+---
+import type { Locale } from '../consts';
+import type { Reference } from '../types';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  refs: Reference[];
+  locale: Locale;
+}
+
+const { refs, locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+{
+  refs.length > 0 && (
+    <section class="bibliography" aria-labelledby="bibliography-title">
+      <h2 class="bibliography__title" id="bibliography-title">
+        {t('post.references')}
+      </h2>
+      <ol class="bibliography__list">
+        {refs.map((ref, i) => (
+          <li class="bibliography__item" id={`ref-${ref.id}`}>
+            <span class="bibliography__marker">[{i + 1}]</span>
+            <span>
+              {ref.authors}.{' '}
+              {ref.url ? (
+                <a href={ref.url} rel="noopener">
+                  <cite>{ref.title}</cite>
+                </a>
+              ) : (
+                <cite>{ref.title}</cite>
+              )}
+              {ref.venue && <>. {ref.venue}</>}
+              {ref.year && <>, {ref.year}</>}.
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
