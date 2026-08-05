@@ -18,9 +18,13 @@ const links = [
   { href: localizePath('/about', locale), label: t('nav.about') },
 ];
 
-// Strip the trailing slash so `/posts` and `/posts/` compare equal.
-const here = Astro.url.pathname.replace(/(.)\/$/, '$1');
-const isActive = (href: string) => here === href || here.startsWith(`${href}/`);
+// Compare without trailing slashes so `/posts` and `/posts/` are equal.
+const trim = (p: string) => p.replace(/(.)\/$/, '$1');
+const here = trim(Astro.url.pathname);
+const isActive = (href: string) => {
+  const target = trim(href);
+  return here === target || here.startsWith(`${target}/`);
+};
 ---
 
 <header class="site-header">

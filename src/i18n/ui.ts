@@ -90,11 +90,28 @@ export function useTranslations(locale: Locale) {
   };
 }
 
-/** Prefixes a path with the locale, honouring `prefixDefaultLocale: false`. */
+/**
+ * Normalises a page path to the trailing-slash form.
+ *
+ * GitHub Pages serves `dist/x/index.html` at `/x/` and 301s `/x` to it. Every
+ * URL we emit — canonical, hreflang, sitemap, nav, feed links — therefore has to
+ * end in a slash, or the canonical tag points at a redirect.
+ */
+export function pagePath(path: string): string {
+  const clean = path.startsWith('/') ? path : `/${path}`;
+  return clean.endsWith('/') ? clean : `${clean}/`;
+}
+
+/** Prefixes a page path with the locale, honouring `prefixDefaultLocale: false`. */
 export function localizePath(path: string, locale: Locale): string {
   const clean = path.startsWith('/') ? path : `/${path}`;
-  if (locale === DEFAULT_LOCALE) return clean;
-  return `/${locale}${clean === '/' ? '' : clean}`;
+  const prefixed = locale === DEFAULT_LOCALE ? clean : `/${locale}${clean === '/' ? '' : clean}`;
+  return pagePath(prefixed);
+}
+
+/** Feed paths are files, not pages, so they never take a trailing slash. */
+export function rssPath(locale: Locale): string {
+  return locale === DEFAULT_LOCALE ? '/rss.xml' : `/${locale}/rss.xml`;
 }
 
 export function formatDate(date: Date, locale: Locale): string {

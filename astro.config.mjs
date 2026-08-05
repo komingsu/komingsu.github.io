@@ -36,7 +36,9 @@ const processor = unified({
 
 export default defineConfig({
   site: SITE_URL,
-  trailingSlash: 'ignore',
+  // GitHub Pages 301s `/x` to `/x/`, so make dev match production and keep every
+  // emitted URL on the form the host actually serves.
+  trailingSlash: 'always',
 
   markdown: {
     processor,

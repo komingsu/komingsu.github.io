@@ -4,6 +4,7 @@ import '../styles/global.css';
 import '../styles/prose.css';
 
 import { SITE, LOCALE_TAGS, type Locale } from '../consts';
+import { pagePath } from '../i18n/ui';
 
 interface Props {
   title: string;
@@ -36,7 +37,7 @@ const {
   noindex = false,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
+const canonical = new URL(pagePath(Astro.url.pathname), Astro.site);
 const ogImage = new URL(image ?? SITE.defaultOgImage, Astro.site);
 // The home page title is already the site name; avoid "Ko Minsu | Ko Minsu".
 const fullTitle = title === SITE.title ? title : `${title} | ${SITE.title}`;
