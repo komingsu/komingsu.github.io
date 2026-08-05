@@ -992,20 +992,22 @@ function LossChart({
         ))}
       </svg>
 
-      {cursorReadout && cursorReadout.length > 0 && (
-        <div className="lab__tooltip" role="status">
-          <span className="lab__tooltip-step">
-            {copy.step} {Math.min(cursor ?? 0, maxStep)}
-          </span>
-          {cursorReadout.map((r) => (
-            <span key={r.id} className="lab__tooltip-row">
-              <span className="lab__swatch" style={{ background: colorOf(r.id) }} />
-              {r.label}
-              <span className="lab__tooltip-value">{formatLoss(r.loss)}</span>
+      <div className="lab__readout" role="status" aria-live="polite">
+        {cursorReadout && cursorReadout.length > 0 && (
+          <>
+            <span className="lab__readout-step">
+              {copy.step} {Math.min(cursor ?? 0, maxStep)}
             </span>
-          ))}
-        </div>
-      )}
+            {cursorReadout.map((r) => (
+              <span key={r.id} className="lab__readout-row">
+                <span className="lab__swatch" style={{ background: colorOf(r.id) }} />
+                {r.label}
+                <span className="lab__readout-value">{formatLoss(r.loss)}</span>
+              </span>
+            ))}
+          </>
+        )}
+      </div>
     </div>
   );
 }
