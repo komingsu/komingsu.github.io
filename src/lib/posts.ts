@@ -1,6 +1,13 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-import { DEFAULT_LOCALE, LOCALES, type Locale } from '../consts';
+import {
+  CATEGORY_ORDER,
+  DEFAULT_LOCALE,
+  LOCALES,
+  UNCATEGORIZED_ID,
+  type CategoryKey,
+  type Locale,
+} from '../consts';
 import { localizePath } from '../i18n/ui';
 
 export type Post = CollectionEntry<'posts'>;
@@ -106,6 +113,29 @@ export async function getAlternates(
   // The current page is always available, even if the slugs do not line up.
   alternates[view.locale] = view.href;
   return alternates;
+}
+
+/** The category a post belongs to, with the missing case folded into "other". */
+export function categoryOf(post: PostView): CategoryKey {
+  return post.entry.data.category ?? UNCATEGORIZED_ID;
+}
+
+/**
+ * Every category in display order with its post count. "other" is dropped when
+ * empty so the sidebar does not advertise a shelf nothing sits on, but the real
+ * categories are always listed — an empty one is a promise, not a mistake.
+ */
+export function collectCategories(
+  posts: PostView[],
+): { id: CategoryKey; count: number }[] {
+  const counts = new Map<CategoryKey, number>();
+  for (const post of posts) {
+    const id = categoryOf(post);
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return CATEGORY_ORDER.map((id) => ({ id, count: counts.get(id) ?? 0 })).filter(
+    ({ id, count }) => id !== UNCATEGORIZED_ID || count > 0,
+  );
 }
 
 /** Tag -> post count, sorted by count then alphabetically. */

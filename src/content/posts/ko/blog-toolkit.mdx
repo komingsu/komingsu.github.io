@@ -19,6 +19,7 @@ import MarginNote from '../../../components/MarginNote.astro';
 title: 글 제목
 description: 목록과 검색 결과, 소셜 카드에 쓰이는 한 문장 요약
 pubDate: 2026-08-06
+category: sciml     # 왼쪽 사이드바의 분류 (하나만)
 tags: ['optimization', 'interactive']
 featured: true      # 홈 상단에 고정
 interactive: true   # 목록에 "인터랙티브" 배지 표시
@@ -28,6 +29,24 @@ draft: true         # 목록·피드에서 숨김 (dev 서버에서는 보임)
 
 스키마는 `src/content.config.ts` 에 정의돼 있어서, 필드를 빠뜨리거나 날짜 형식이
 틀리면 **빌드가 실패합니다.** 배포 후에 깨진 걸 발견하는 것보다 낫습니다.
+
+## 분류와 태그
+
+둘은 역할이 다릅니다. **분류(`category`)는 글이 놓인 선반**이라 한 편에 하나만
+붙고, 왼쪽 사이드바와 `/categories/…` 페이지를 만듭니다. 쓸 수 있는 값은 네
+가지입니다.
+
+| 값 | 이름 | 담는 글 |
+| --- | --- | --- |
+| `code-agents` | 코딩 에이전트 | Claude Code 같은 코드 에이전트 사용 기술 |
+| `sciml` | SciML | 과학·수학 구조를 딥러닝에 접목하는 글 |
+| `reading` | 독서 | 책과 논문을 읽고 남은 것 |
+| `reflections` | 사색 | 나에 대한 질문과 철학 |
+
+**태그(`tags`)는 세부 주제**라 몇 개든 붙습니다. 분류를 적지 않으면 "기타"로
+들어가고, 목록에서 사라지지는 않습니다. 분류를 늘리거나 이름을 바꾸려면
+`src/consts.ts` 의 `CATEGORIES` 만 고치면 됩니다 — 다만 `id` 는 URL이므로
+바꾸면 기존 링크가 깨집니다.
 
 ## 수식
 

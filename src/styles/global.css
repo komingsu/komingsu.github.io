@@ -31,6 +31,8 @@
   --w-text: 46rem; /* main reading column */
   --w-margin: 15rem; /* right-hand notes column */
   --w-gutter: 1.5rem;
+  --w-sidebar: 14rem; /* left category rail */
+  --h-header: 3.5rem;
 
   /* Neutrals */
   --c-bg: #ffffff;
@@ -229,8 +231,162 @@ hr {
   padding-inline: var(--w-gutter);
 }
 
+/* The sidebar and the content area sit side by side below the header. `main`
+   is the containing block for the article grid, so it carries `container-type`
+   and prose.css sizes its columns against *that* rather than the viewport —
+   otherwise the margin column would keep its width after the rail has already
+   eaten 14rem of it. */
+.layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
 main {
   flex: 1;
+  min-width: 0;
+  container-type: inline-size;
+  container-name: content;
+}
+
+/* Left category rail ------------------------------------------------------ */
+
+.site-sidebar {
+  flex: 0 0 var(--w-sidebar);
+  border-right: 1px solid var(--c-border);
+}
+
+/* The rail stretches to full page height so its divider is a continuous line;
+   the sticky behaviour lives on the inner box. */
+.site-sidebar__inner {
+  position: sticky;
+  top: var(--h-header);
+  max-height: calc(100vh - var(--h-header));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.75rem 1rem 2rem var(--w-gutter);
+}
+
+.sidebar-nav__title {
+  margin-bottom: 0.6rem;
+  color: var(--c-text-faint);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: var(--radius);
+  color: var(--c-text-muted);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.sidebar-nav__link:hover {
+  background: var(--c-bg-subtle);
+  color: var(--c-text);
+}
+
+.sidebar-nav__link[aria-current='page'] {
+  background: var(--c-accent-bg);
+  color: var(--c-accent);
+  font-weight: 620;
+}
+
+/* A category with nothing in it yet is still worth showing — it says what the
+   blog is going to be about — but it should not compete for attention. */
+.sidebar-nav__link.is-empty {
+  color: var(--c-text-faint);
+}
+
+.sidebar-nav__name {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-nav__count {
+  color: var(--c-text-faint);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar-nav__link[aria-current='page'] .sidebar-nav__count {
+  color: inherit;
+}
+
+.sidebar-nav__aside {
+  margin-top: 2rem;
+}
+
+.sidebar-nav__more {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--c-text-faint);
+  font-size: var(--text-xs);
+  text-decoration: none;
+}
+
+.sidebar-nav__more:hover {
+  color: var(--c-accent);
+}
+
+/* Below the point where a 14rem rail leaves a usable reading column, the rail
+   becomes a horizontal strip of categories under the header. Same markup, same
+   links — only the axis changes. */
+@media (max-width: 60rem) {
+  .layout {
+    display: block;
+  }
+
+  .site-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .site-sidebar__inner {
+    position: static;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.6rem var(--w-gutter);
+    /* Fade the right edge so a cut-off category reads as "scroll me". */
+    mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+  }
+
+  .sidebar-nav__title,
+  .sidebar-nav__aside {
+    display: none;
+  }
+
+  .sidebar-nav__list {
+    flex-direction: row;
+    gap: 0.4rem;
+    width: max-content;
+  }
+
+  .sidebar-nav__link {
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .sidebar-nav__link[aria-current='page'] {
+    border-color: transparent;
+  }
 }
 
 /* Site header ------------------------------------------------------------- */
@@ -438,6 +594,18 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+.post-card__category {
+  color: var(--c-accent);
+  font-weight: 620;
+}
+
+.post-card__category::after {
+  content: '·';
+  margin-left: 0.5rem;
+  color: var(--c-text-faint);
+  font-weight: 400;
+}
+
 .post-card__title {
   font-size: var(--text-lg);
   font-weight: 620;
@@ -491,6 +659,62 @@ a.pill:hover {
 .pill--warn {
   background: transparent;
   border-style: dashed;
+}
+
+/* Category index --------------------------------------------------------- */
+
+.category-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-card {
+  display: block;
+  height: 100%;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  color: inherit;
+  text-decoration: none;
+}
+
+.category-card:hover {
+  border-color: var(--c-border-strong);
+  background: var(--c-bg-subtle);
+}
+
+.category-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.category-card__title {
+  font-size: var(--text-lg);
+  font-weight: 620;
+}
+
+.category-card:hover .category-card__title {
+  color: var(--c-accent);
+}
+
+.category-card__count {
+  margin-left: auto;
+  color: var(--c-text-faint);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.category-card__desc {
+  margin-top: 0.4rem;
+  color: var(--c-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
 }
 
 .tag-cloud {

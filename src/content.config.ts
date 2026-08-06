@@ -4,7 +4,7 @@ import { glob } from 'astro/loaders';
 // supported path and avoids depending on zod being hoisted to the top level.
 import { z } from 'astro/zod';
 
-import { LOCALES } from './consts';
+import { CATEGORY_IDS, LOCALES } from './consts';
 
 /**
  * Posts live at `src/content/posts/<locale>/<slug>.mdx`, which makes the
@@ -18,6 +18,12 @@ const posts = defineCollection({
       description: z.string(),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
+      /**
+       * The one shelf this post sits on, driving the sidebar and
+       * `/categories/…`. Left out, the post falls into "other" rather than
+       * failing the build — a half-written draft should still preview.
+       */
+      category: z.enum(CATEGORY_IDS).optional(),
       tags: z.array(z.string()).default([]),
       /** Hidden from listings and feeds, but still reachable by URL. */
       draft: z.boolean().default(false),

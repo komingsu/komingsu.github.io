@@ -1,5 +1,5 @@
 ---
-import type { Locale } from '../consts';
+import { CATEGORIES, type CategoryKey, type Locale } from '../consts';
 import { formatDate, useTranslations } from '../i18n/ui';
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
   title: string;
   description: string;
   pubDate: Date;
+  category?: CategoryKey;
   tags?: string[];
   locale: Locale;
   interactive?: boolean;
@@ -19,6 +20,7 @@ const {
   title,
   description,
   pubDate,
+  category,
   tags = [],
   locale,
   interactive = false,
@@ -32,6 +34,11 @@ const t = useTranslations(locale);
 <li>
   <a class="post-card" href={href}>
     <div class="post-card__meta">
+      {
+        /* A span, not a link: the whole card is already an anchor, and nesting
+           one inside another is invalid HTML. */
+        category && <span class="post-card__category">{CATEGORIES[category].name[locale]}</span>
+      }
       <time datetime={pubDate.toISOString()}>{formatDate(pubDate, locale)}</time>
       {readingTime && <span>· {t('post.readingTime')(readingTime)}</span>}
       {interactive && <span class="pill pill--accent">{t('post.interactive')}</span>}

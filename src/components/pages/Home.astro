@@ -2,7 +2,7 @@
 import PostCard from '../PostCard.astro';
 import { SITE, type Locale } from '../../consts';
 import { localizePath, useTranslations } from '../../i18n/ui';
-import { getPosts } from '../../lib/posts';
+import { categoryOf, getPosts } from '../../lib/posts';
 
 interface Props {
   locale: Locale;
@@ -39,6 +39,7 @@ const recent = posts.filter((p) => !featuredIds.has(p.entry.id)).slice(0, 8);
                   title={post.entry.data.title}
                   description={post.entry.data.description}
                   pubDate={post.entry.data.pubDate}
+                  category={categoryOf(post)}
                   tags={post.entry.data.tags}
                   locale={locale}
                   interactive={post.entry.data.interactive}
@@ -60,6 +61,7 @@ const recent = posts.filter((p) => !featuredIds.has(p.entry.id)).slice(0, 8);
                   title={post.entry.data.title}
                   description={post.entry.data.description}
                   pubDate={post.entry.data.pubDate}
+                  category={categoryOf(post)}
                   tags={post.entry.data.tags}
                   locale={locale}
                   interactive={post.entry.data.interactive}

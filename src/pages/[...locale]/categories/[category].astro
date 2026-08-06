@@ -1,0 +1,69 @@
+---
+import PostList from '../../../components/pages/PostList.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  CATEGORIES,
+  CATEGORY_ORDER,
+  DEFAULT_LOCALE,
+  LOCALES,
+  type CategoryKey,
+  type Locale,
+} from '../../../consts';
+import { localizePath } from '../../../i18n/ui';
+import { categoryOf, getPosts, type PostView } from '../../../lib/posts';
+
+/**
+ * Every category gets a page in every locale, even an empty one. The sidebar
+ * links to all of them from every page, so a "generate only what has posts"
+ * rule would turn writing the first English post in a category into a build
+ * that silently 404s the Korean rail.
+ */
+export async function getStaticPaths() {
+  const paths = [];
+
+  for (const locale of LOCALES) {
+    const posts = await getPosts(locale);
+    for (const category of CATEGORY_ORDER) {
+      paths.push({
+        params: {
+          locale: locale === DEFAULT_LOCALE ? undefined : locale,
+          category,
+        },
+        props: {
+          locale,
+          category,
+          posts: posts.filter((post) => categoryOf(post) === category),
+        },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { locale, category, posts } = Astro.props as {
+  locale: Locale;
+  category: CategoryKey;
+  posts: PostView[];
+};
+
+const meta = CATEGORIES[category];
+const alternates = Object.fromEntries(
+  LOCALES.map((loc) => [loc, localizePath(`/categories/${category}`, loc)]),
+) as Partial<Record<Locale, string>>;
+---
+
+<BaseLayout
+  title={meta.name[locale]}
+  description={meta.description[locale]}
+  locale={locale}
+  alternates={alternates}
+  noindex={posts.length === 0}
+>
+  <PostList
+    locale={locale}
+    title={meta.name[locale]}
+    lede={meta.description[locale]}
+    posts={posts}
+  />
+</BaseLayout>

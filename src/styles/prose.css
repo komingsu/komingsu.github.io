@@ -35,8 +35,12 @@
 }
 
 /* Below the point where a margin column can exist, collapse to one centred
-   column so `wide` and `text` stop diverging. */
-@media (max-width: 1180px) {
+   column so `wide` and `text` stop diverging.
+
+   Measured against the `content` container (`main` in global.css) rather than
+   the viewport: the left category rail takes 14rem out of the page, and the
+   grid has to react to the width it actually got. */
+@container content (max-width: 1180px) {
   .prose {
     grid-template-columns:
       [full-start] minmax(var(--w-gutter), 1fr)
@@ -302,7 +306,7 @@
 }
 
 /* No gutter to escape into — become an inset aside in normal flow. */
-@media (max-width: 1180px) {
+@container content (max-width: 1180px) {
   .margin-note {
     height: auto;
     margin-block: 1.15em !important;
@@ -557,6 +561,11 @@
   color: var(--c-text-faint);
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
+}
+
+.article-header__category {
+  font-weight: 650;
+  text-decoration: none;
 }
 
 .article-header__title {

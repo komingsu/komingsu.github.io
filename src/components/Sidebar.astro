@@ -1,0 +1,87 @@
+---
+import { CATEGORIES, type Locale } from '../consts';
+import { localizePath, useTranslations } from '../i18n/ui';
+import { collectCategories, collectTags, getPosts } from '../lib/posts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const posts = await getPosts(locale);
+const categories = collectCategories(posts);
+// A handful of the busiest tags — enough to be a shortcut, not a second index.
+const tags = collectTags(posts).slice(0, 8);
+
+// Compare without trailing slashes so `/posts` and `/posts/` are equal.
+const trim = (p: string) => p.replace(/(.)\/$/, '$1');
+const here = trim(Astro.url.pathname);
+const isCurrent = (href: string) => here === trim(href);
+
+const allPostsHref = localizePath('/posts', locale);
+---
+
+<aside class="site-sidebar">
+  <div class="site-sidebar__inner">
+    <nav class="sidebar-nav" aria-label={t('sidebar.label')}>
+      <p class="sidebar-nav__title">{t('nav.categories')}</p>
+
+      <ul class="sidebar-nav__list">
+        <li>
+          <a
+            class="sidebar-nav__link"
+            href={allPostsHref}
+            aria-current={isCurrent(allPostsHref) ? 'page' : undefined}
+          >
+            <span class="sidebar-nav__name">{t('categories.allPosts')}</span>
+            <span class="sidebar-nav__count">{posts.length}</span>
+          </a>
+        </li>
+
+        {
+          categories.map(({ id, count }) => {
+            const href = localizePath(`/categories/${id}`, locale);
+            return (
+              <li>
+                <a
+                  class:list={['sidebar-nav__link', { 'is-empty': count === 0 }]}
+                  href={href}
+                  title={CATEGORIES[id].description[locale]}
+                  aria-current={isCurrent(href) ? 'page' : undefined}
+                >
+                  <span class="sidebar-nav__name">{CATEGORIES[id].name[locale]}</span>
+                  <span class="sidebar-nav__count">{count}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      {
+        tags.length > 0 && (
+          <div class="sidebar-nav__aside">
+            <p class="sidebar-nav__title">{t('tags.title')}</p>
+            <ul class="tag-cloud">
+              {tags.map(({ tag }) => (
+                <li>
+                  <a
+                    class="pill"
+                    href={localizePath(`/tags/${encodeURIComponent(tag)}`, locale)}
+                  >
+                    #{tag}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a class="sidebar-nav__more" href={localizePath('/tags', locale)}>
+              {t('tags.all')} →
+            </a>
+          </div>
+        )
+      }
+    </nav>
+  </div>
+</aside>

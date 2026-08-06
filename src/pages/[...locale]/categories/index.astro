@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { CATEGORIES, SITE, type Locale } from '../../../consts';
+import { localizePath, useTranslations } from '../../../i18n/ui';
+import { collectCategories, getPosts, staticAlternates } from '../../../lib/posts';
+import { localePaths } from '../../../lib/routes';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as { locale: Locale };
+const t = useTranslations(locale);
+
+const categories = collectCategories(await getPosts(locale));
+---
+
+<BaseLayout
+  title={t('categories.title')}
+  description={SITE.description[locale]}
+  locale={locale}
+  alternates={staticAlternates('/categories')}
+>
+  <div class="shell">
+    <header class="page-header">
+      <h1 class="page-header__title">{t('categories.title')}</h1>
+      <p class="page-header__lede">{t('categories.lede')}</p>
+    </header>
+
+    <ul class="category-grid">
+      {
+        categories.map(({ id, count }) => (
+          <li>
+            <a class="category-card" href={localizePath(`/categories/${id}`, locale)}>
+              <div class="category-card__head">
+                <h2 class="category-card__title">{CATEGORIES[id].name[locale]}</h2>
+                <span class="category-card__count">{t('posts.count')(count)}</span>
+              </div>
+              <p class="category-card__desc">{CATEGORIES[id].description[locale]}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>

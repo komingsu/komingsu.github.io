@@ -2,10 +2,10 @@
 import Bibliography from '../components/Bibliography.astro';
 import Toc from '../components/Toc.astro';
 import BaseLayout from './BaseLayout.astro';
-import type { Locale } from '../consts';
+import { CATEGORIES, type Locale } from '../consts';
 import type { Heading } from '../types';
 import { formatDate, localizePath, useTranslations } from '../i18n/ui';
-import type { PostView } from '../lib/posts';
+import { categoryOf, type PostView } from '../lib/posts';
 
 interface Props {
   post: PostView;
@@ -22,6 +22,8 @@ const t = useTranslations(locale);
 
 // Frontmatter `cover` is an ImageMetadata once the schema resolves it.
 const ogImage = data.cover?.src;
+
+const category = categoryOf(post);
 ---
 
 <BaseLayout
@@ -40,6 +42,10 @@ const ogImage = data.cover?.src;
   <article>
     <header class="shell article-header">
       <div class="article-header__meta">
+        <a class="article-header__category" href={localizePath(`/categories/${category}`, locale)}>
+          {CATEGORIES[category].name[locale]}
+        </a>
+        <span>·</span>
         <time datetime={data.pubDate.toISOString()}>
           {t('post.published')} {formatDate(data.pubDate, locale)}
         </time>

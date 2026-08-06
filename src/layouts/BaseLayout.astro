@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import Sidebar from '../components/Sidebar.astro';
 import { LOCALE_TAGS, type Locale } from '../consts';
 
 interface Props {
@@ -46,9 +47,12 @@ const { locale, alternates = {}, ...head } = Astro.props;
   <body>
     <a class="skip-link" href="#main">본문으로 건너뛰기 / Skip to content</a>
     <Header locale={locale} alternates={alternates} />
-    <main id="main">
-      <slot />
-    </main>
+    <div class="layout">
+      <Sidebar locale={locale} />
+      <main id="main">
+        <slot />
+      </main>
+    </div>
     <Footer locale={locale} />
   </body>
 </html>
