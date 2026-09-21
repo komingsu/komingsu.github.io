@@ -1,0 +1,3 @@
+# Preserve Python csv.writer's CRLF bytes: results.json records their SHA256.
+# CRLF is intentional here, not trailing whitespace.
+public/data/beam-surrogate/*.csv -text whitespace=cr-at-eol

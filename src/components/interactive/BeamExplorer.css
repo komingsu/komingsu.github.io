@@ -1,0 +1,61 @@
+/* Palette comes from OptimizerLab.css: slot 1 = baseline, slot 2 = candidate.
+   Shape (circle/star, solid/dashed), labels and values provide redundant cues.
+   The background uses the existing neutral ramp; no new categorical hues. */
+.beam-explorer {
+  padding: 1.1rem;
+  background: var(--viz-surface);
+  color: var(--viz-ink);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.beam-explorer .beam-intro { margin: 0 0 1rem; }
+.beam-explorer .beam-intro strong { font-size: 1.05rem; }
+.beam-explorer .beam-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 1.25rem;
+}
+.beam-explorer .beam-panels > div { min-width: 0; }
+.beam-explorer .beam-map { width: 100%; height: auto; cursor: crosshair; touch-action: manipulation; }
+.beam-explorer .beam-shape { width: 100%; max-width: 420px; margin: auto; }
+.beam-explorer .beam-key,
+.beam-explorer .beam-note,
+.beam-explorer .beam-status { margin: 0.5rem 0; font-size: 0.8rem; color: var(--viz-ink-muted); }
+.beam-explorer .beam-base-dot { color: var(--series-1); }
+.beam-explorer .beam-best-dot { color: var(--series-2); }
+.beam-explorer .beam-values { margin: 0.8rem 0; }
+.beam-explorer .beam-values > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--viz-grid);
+}
+.beam-explorer .beam-values dt { font-weight: 400; }
+.beam-explorer .beam-values dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.beam-explorer .beam-constraint { padding: 0.6rem; border: 1px solid var(--viz-axis); border-radius: var(--radius); }
+.beam-explorer .beam-constraint[data-feasible='false'] { border-style: dashed; font-weight: 650; }
+.beam-explorer .beam-controls { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--viz-grid); }
+.beam-explorer .beam-controls label { display: flex; justify-content: space-between; margin-top: 0.3rem; }
+.beam-explorer output { font-variant-numeric: tabular-nums; }
+.beam-explorer input[type='range'] { display: block; width: 100%; min-height: 44px; margin: 0; accent-color: var(--series-1); }
+.beam-explorer .beam-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0 1rem; }
+.beam-explorer button {
+  min-height: 44px;
+  padding: 0.45rem 0.7rem;
+  background: var(--c-bg);
+  border: 1px solid var(--viz-axis);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.beam-explorer button:hover { background: var(--c-bg-inset); }
+.beam-explorer .beam-fallback img { width: 100%; height: auto; }
+@media (max-width: 480px) {
+  .beam-explorer { padding: 0.65rem; }
+  .beam-explorer .beam-values > div { flex-wrap: wrap; }
+}
+
+/* Keep this interactive figure in the reading column without the browser's
+   default 40px figure margins squeezing the mobile controls. */
+.interactive:has(.beam-explorer) { margin-inline: 0; }
