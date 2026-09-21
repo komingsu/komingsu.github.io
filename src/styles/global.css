@@ -427,6 +427,16 @@ main {
   margin-left: auto;
 }
 
+/* Keep navigation, language and theme controls inside narrow phone screens. */
+@media (max-width: 480px) {
+  .site-nav {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-block: 0.35rem;
+  }
+}
+
 .site-nav__link {
   padding: 0.35rem 0.6rem;
   border-radius: var(--radius);

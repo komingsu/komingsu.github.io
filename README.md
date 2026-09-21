@@ -40,8 +40,10 @@ draft: false       # 목록·피드에서 숨김 (dev 서버에서는 보임)
 The schema is enforced in `src/content.config.ts` — a missing field or a bad date
 **fails the build** instead of shipping broken.
 
-`/posts/blog-toolkit` is the live reference for every authoring component:
-math, margin notes, callouts, figure widths, citations, and interactive islands.
+[`beam-surrogate-design-space.mdx`](src/content/posts/ko/beam-surrogate-design-space.mdx)
+is the published example of math, callouts, figures, citations, data-backed tables,
+and interactive islands. Its experiment and reproduction instructions live in
+[`scripts/beam-surrogate`](scripts/beam-surrogate/README.md).
 
 ### Interactive figures
 
@@ -60,8 +62,8 @@ Without a `client:*` directive the component renders as static HTML and does
 nothing. Only components carrying a directive ship JavaScript, so a post with no
 interactive figures ships effectively none.
 
-`OptimizerLab.tsx` is the worked example — canvas field, SVG overlay, log-scale
-chart, legend, keyboard-reachable tooltip, and a table view.
+`BeamExplorer.tsx` is the published example — a canvas performance map linked to
+an SVG shape, keyboard-accessible sliders, a values table, and a static fallback.
 
 ## Layout
 
